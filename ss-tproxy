@@ -126,12 +126,7 @@ EOF
 )
     ;;
 chnroute)
-    temp_chnroute_txt=$(mktemp)
-    cat $file_chnroute_txt >$temp_chnroute_txt
-    echo "$dns_direct/32" >>$temp_chnroute_txt
-    for intranet in "${ipts_intranet[@]}"; do echo "$intranet" >>$temp_chnroute_txt; done
-
-    chinadns_params="-b 0.0.0.0 -p 65353 -s $dns_direct,$dns_remote -c $temp_chnroute_txt -y 0"
+    chinadns_params="-b 0.0.0.0 -p 65353 -s $dns_direct,$dns_remote -c /etc/ss-tproxy/chnroute.txt -y 0"
     [ "$chinadns_mutation" = 'true' ] && chinadns_params+=' -m'
     [ "$chinadns_verbose"  = 'true' ] && chinadns_params+=' -v'
 
@@ -417,8 +412,6 @@ function start {
     start_resolver
     start_iptables
     start_dnsproxy
-
-    rm -f $temp_chnroute_txt &>/dev/null
 
     [ "$(type -t post_start)" = 'function' ] && post_start
 }
